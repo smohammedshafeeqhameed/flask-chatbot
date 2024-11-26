@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #f4f4f9;
+        }
+        #chatbox {
+            width: 80%;
+            max-width: 600px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: white;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow-y: auto;
+            height: 400px;
+        }
+        .message {
+            margin: 10px 0;
+        }
+        .user {
+            text-align: right;
+            color: blue;
+        }
+        .assistant {
+            text-align: left;
+            color: green;
+        }
+        #input-area {
+            margin-top: 10px;
+            display: flex;
+            width: 80%;
+            max-width: 600px;
+        }
+        #input-field {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        #send-btn {
+            padding: 10px 20px;
+            background-color: blue;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            margin-left: 10px;
+            cursor: pointer;
+        }
+        #send-btn:hover {
+            background-color: darkblue;
+        }
+    </style>
+</head>
+<body>
+<h1>HI i AM BOT</h1>
+    <div id="chatbox"></div>
+    <div id="input-area">
+        <input type="text" id="input-field" placeholder="Type your message...">
+        <button id="send-btn">Send</button>
+    </div>
+
+    <script>
+        const chatbox = document.getElementById("chatbox");
+        const inputField = document.getElementById("input-field");
+        const sendBtn = document.getElementById("send-btn");
+
+        function addMessage(content, role) {
+            const messageDiv = document.createElement("div");
+            messageDiv.classList.add("message", role);
+            messageDiv.textContent = content;
+            chatbox.appendChild(messageDiv);
+            chatbox.scrollTop = chatbox.scrollHeight; // Auto-scroll to the bottom
+        }
+
+        sendBtn.addEventListener("click", async () => {
+            const userInput = inputField.value.trim();
+            if (!userInput) return;
+
+            // Add user message to chatbox
+            addMessage(userInput, "user");
+            inputField.value = "";
+
+            // Send message to server
+            const response = await fetch("/chat", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ message: userInput }),
+            });
+
+            const data = await response.json();
+            addMessage(data.response, "assistant");
+        });
+
+        // Allow pressing Enter to send the message
+        inputField.addEventListener("keypress", (e) => {
+            if (e.key === "Enter") {
+                sendBtn.click();
+            }
+        });
+    </script>
+<button></button>
+</body>
+</html>
